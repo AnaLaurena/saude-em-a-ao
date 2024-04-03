@@ -1,60 +1,121 @@
 package utils;
+
 import java.util.Scanner;
 
-public class CronometroPedalada {
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        String atividade;
-        long inicio = 0;
-        long fim = 0;
-        long pausa = 0;
-        long tempoDecorrido = 0;
+public class cronometro {
+    private long startTime;
+    private long elapsedTime;
+    private boolean isRunning;
+    private double calorias;
+    private double distanciaKm;
 
-        while (true) {
-            System.out.println("Informe a atividade (caminhar/pedalar/pausar/sair):");
-            atividade = scanner.nextLine();
+    public cronometro() {
+        isRunning = false;
+        calorias = 0;
+        distanciaKm = 0;
+    }
 
-            if (atividade.equalsIgnoreCase("caminhar") || atividade.equalsIgnoreCase("pedalar")) {
-                if (inicio == 0) {
-                    // Iniciar o cronômetro
-                    inicio = System.currentTimeMillis();
-                    System.out.println("Cronômetro iniciado!");
-                } else {
-                    // Parar o cronômetro e exibir o tempo decorrido
-                    fim = System.currentTimeMillis();
-                    tempoDecorrido += (fim - inicio) / 1000;
-
-                    System.out.println("Tempo decorrido: " + tempoDecorrido + " segundos");
-
-                    // Reiniciar as variáveis para a próxima atividade
-                    inicio = 0;
-                    fim = 0;
-                }
-            } else if (atividade.equalsIgnoreCase("pausar")) {
-                if (inicio != 0 && pausa == 0) {
-                    // Pausar o cronômetro
-                    pausa = System.currentTimeMillis();
-                    System.out.println("Cronômetro pausado!");
-                } else if (inicio == 0) {
-                    System.out.println("Cronômetro não iniciado. Não é possível pausar.");
-                } else {
-                    // Continuar o cronômetro
-                    long tempoPausado = System.currentTimeMillis() - pausa;
-                    inicio += tempoPausado;
-
-                    // Reiniciar a variável de pausa
-                    pausa = 0;
-
-                    System.out.println("Cronômetro continuado!");
-                }
-            } else if (atividade.equalsIgnoreCase("sair")) {
-                break;
-            } else {
-                System.out.println("Atividade inválida. Tente novamente.");
-            }
+    public void iniciar() {
+        if (!isRunning) {
+            startTime = System.currentTimeMillis();
+            isRunning = true;
+            System.out.println("Cronômetro iniciado.");
+        } else {
+            System.out.println("O cronômetro já está em execução.");
         }
+    }
+
+    public void pausar() {
+        if (isRunning) {
+            elapsedTime += System.currentTimeMillis() - startTime;
+            calcularCaloriasEDistancia();
+            isRunning = false;
+            System.out.println("Cronômetro pausado.");
+        } else {
+            System.out.println("O cronômetro não está em execução.");
+        }
+    }
+
+    public void resetar() {
+        isRunning = false;
+        elapsedTime = 0;
+        calorias = 0;
+        distanciaKm = 0;
+        System.out.println("Cronômetro resetado.");
+    }
+
+    public void exibirTempoDecorrido() {
+        long tempoAtual = isRunning ? elapsedTime + System.currentTimeMillis() - startTime : elapsedTime;
+        long segundos = tempoAtual / 1000;
+        long minutos = segundos / 60;
+        segundos %= 60;
+        System.out.print("\rTempo decorrido: " + String.format("%02d:%02d", minutos, segundos));
+    }
+
+    public void calcularCaloriasEDistancia() {
+        long tempoDecorrido = elapsedTime + System.currentTimeMillis() - startTime;
+        double horas = (double) tempoDecorrido / (1000 * 60 * 60); // Convertendo de milissegundos para horas
+        calorias += horas * 100;
+        distanciaKm += horas * 5;
+    }
+
+    public void exibirCaloriasEDistancia() {
+        calcularCaloriasEDistancia();
+        System.out.printf("\nCalorias queimadas: %.2f\nDistância percorrida: %.2f km\n", calorias, distanciaKm);
+    }
+
+    public static void main(String[] args) {
+        cronometro cronometro = new cronometro();
+        Scanner scanner = new Scanner(System.in);
+        int opcao;
+
+        Thread threadTempo = new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                if (cronometro.isRunning) {
+                    cronometro.exibirTempoDecorrido();
+                }
+            }
+        });
+        threadTempo.setDaemon(true);
+        threadTempo.start();
+
+        do {
+            System.out.println("\n\n--- Cronômetro ---");
+            System.out.println("1. Iniciar");
+            System.out.println("2. Pausar");
+            System.out.println("3. Resetar");
+            System.out.println("4. Exibir calorias e distância");
+            System.out.println("0. Sair");
+            System.out.print("Escolha uma opção: ");
+            opcao = scanner.nextInt();
+
+            switch (opcao) {
+                case 1:
+                    cronometro.iniciar();
+                    break;
+                case 2:
+                    cronometro.pausar();
+                    break;
+                case 3:
+                    cronometro.resetar();
+                    break;
+                case 4:
+                    cronometro.exibirCaloriasEDistancia();
+                    break;
+                case 0:
+                    System.out.println("\nSaindo...");
+                    break;
+                default:
+                    System.out.println("Opção inválida. Por favor, escolha novamente.");
+            }
+        } while (opcao != 0);
 
         scanner.close();
-        System.out.println("Programa encerrado.");
     }
 }
