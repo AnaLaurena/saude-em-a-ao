@@ -41,6 +41,11 @@ public class usuariocontroller {
         }
         
     }
+
+	public usuario autenticarusuario(String cpf, String senha) {
+		// TODO Auto-generated method stub
+		return null;
+	}
     
     
 }

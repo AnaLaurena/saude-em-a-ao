@@ -6,7 +6,7 @@ public class usuario {
 	
 	private boolean Estalogado = false;
 	
-	public usuario (String Nome, String Celular, String Email, String Senha) {
+	public usuario (String Nome, String Celular, String Email, String Senha, String nickname) {
 		this.Nome = Nome;
 		this.Celular = Celular;
 		this.Email = Email;
@@ -27,6 +27,11 @@ public class usuario {
 				+ "\nEstalogado" + this.Estalogado
 				);
 		
+	}
+
+	public boolean validarcadastro(String confirmacaoSenha) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 	
 }
