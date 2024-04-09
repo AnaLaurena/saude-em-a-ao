@@ -9,7 +9,7 @@ public class RegistroAlimentacao {
     private String tipoAlimento;
     private double quantidade;
 
-    // Construtor
+    
     public RegistroAlimentacao(int id, int idUsuario, Date data, String tipoAlimento, double quantidade) {
         this.id = id;
         this.idUsuario = idUsuario;
@@ -18,7 +18,7 @@ public class RegistroAlimentacao {
         this.quantidade = quantidade;
     }
 
-    // Métodos getters e setters
+   
     public int getId() {
         return id;
     }
